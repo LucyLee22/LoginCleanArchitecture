@@ -5,7 +5,8 @@ import use_case.SignupInputData;
 
 public class SignupController {
 
-    final SignupInputBoundary userSignupUseCaseInteractor;
+    private final SignupInputBoundary userSignupUseCaseInteractor;
+
     public SignupController(SignupInputBoundary userSignupUseCaseInteractor) {
         this.userSignupUseCaseInteractor = userSignupUseCaseInteractor;
     }
@@ -15,5 +16,9 @@ public class SignupController {
                 username, password1, password2);
 
         userSignupUseCaseInteractor.execute(signupInputData);
+    }
+
+    public void clearUsers() {
+        userSignupUseCaseInteractor.clearUsers();
     }
 }

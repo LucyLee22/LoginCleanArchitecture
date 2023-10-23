@@ -25,6 +25,10 @@ public class SignupView extends JPanel implements ActionListener, PropertyChange
     private final JButton signUp;
     private final JButton cancel;
 
+    public JButton getClearButton(){
+        return signUp;
+    }
+
     public SignupView(SignupController controller, SignupViewModel signupViewModel) {
 
         this.signupController = controller;
@@ -47,14 +51,35 @@ public class SignupView extends JPanel implements ActionListener, PropertyChange
         cancel = new JButton(signupViewModel.CANCEL_BUTTON_LABEL);
         buttons.add(cancel);
 
+        JButton clearButton = new JButton(signupViewModel.CLEAR_BUTTON_LABEL);
+        clearButton.addActionListener(
+                new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent evt) {
+                        signupController.clearUsers();
+                    }
+                }
+        );
+        buttons.add(clearButton);
+
         signUp.addActionListener(
                 // This creates an anonymous subclass of ActionListener and instantiates it.
                 new ActionListener() {
                     public void actionPerformed(ActionEvent evt) {
-                        if (evt.getSource().equals(signUp)) {
-                            signupController.execute(usernameInputField.getText(),
-                                    String.valueOf(passwordInputField.getPassword()),
-                                    String.valueOf(repeatPasswordInputField.getPassword()));
+                        if (evt.getSource().equals(cancel)) {
+                            System.out.println("Cancel not implemented yet.");
+                        } else if (evt.getSource().equals(signUp)) {
+                            SignupState state = signupViewModel.getState();
+
+                            String username = state.getUsername();
+                            String password = String.valueOf(passwordInputField.getPassword());
+                            String repeatPassword = String.valueOf(repeatPasswordInputField.getPassword());
+
+                            if (evt.getActionCommand().equals(signupViewModel.CLEAR_BUTTON_LABEL)){
+                                signupController.clearUsers();
+                            } else {
+                                signupController.execute(username, password, repeatPassword);
+                            }
                         }
                     }
                 }
@@ -70,7 +95,7 @@ public class SignupView extends JPanel implements ActionListener, PropertyChange
                     @Override
                     public void keyTyped(KeyEvent e) {
                         SignupState currentState = signupViewModel.getState();
-                        currentState.setUsername(usernameInputField.getText() + e.getKeyChar());
+                        currentState.setUsername(usernameInputField.getText());
                         signupViewModel.setState(currentState);
                     }
 
@@ -82,6 +107,24 @@ public class SignupView extends JPanel implements ActionListener, PropertyChange
                     public void keyReleased(KeyEvent e) {
                     }
                 });
+
+        repeatPasswordInputField.addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                SignupState currentState = signupViewModel.getState();
+                currentState.setRepeatPassword(String.valueOf(repeatPasswordInputField.getPassword()));
+                signupViewModel.setState(currentState);
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+            }
+        });
+
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
         this.add(title);

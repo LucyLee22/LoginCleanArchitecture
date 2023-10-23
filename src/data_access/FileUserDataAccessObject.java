@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import data_access.InvalidCsvHeaderException;
+
 public class FileUserDataAccessObject implements UserSignupDataAccessInterface {
 
     private final File csvFile;
@@ -35,7 +37,10 @@ public class FileUserDataAccessObject implements UserSignupDataAccessInterface {
                 String header = reader.readLine();
 
                 // TODO clean this up by creating a new Exception subclass and handling it in the UI.
-                assert header.equals("username,password,creation_time");
+                if (!header.equals("username,password,creation_time")) {
+                    throw new InvalidCsvHeaderException("Invalid CSV header: " + header);
+                }
+//                assert header.equals("username,password,creation_time");
 
                 String row;
                 while ((row = reader.readLine()) != null) {
@@ -55,6 +60,11 @@ public class FileUserDataAccessObject implements UserSignupDataAccessInterface {
     public void save(User user) {
         accounts.put(user.getName(), user);
         this.save();
+    }
+
+    public void clearAllUsers() {
+        accounts.clear();
+        save();
     }
 
     private void save() {

@@ -25,4 +25,9 @@ public class InMemoryUserDataAccessObject implements UserSignupDataAccessInterfa
     public void save(User user) {
         users.put(user.getName(), user);
     }
+
+    @Override
+    public void clearAllUsers() {
+        users.clear();
+    }
 }
